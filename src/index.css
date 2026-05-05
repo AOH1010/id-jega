@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;300;400;500;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "HarmonyOS Sans", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-jega-red: #E83E3E;
+  --color-jega-sidebar: #F7F6F1;
+  --color-jega-bg: #FFFFFF;
+  --color-jega-card: #FFFFFF;
+  --color-jega-text: #000000;
+  --color-jega-text-muted: #7A7A7A;
+  --color-jega-border: #F0EFEB;
+}
+
+@font-face {
+  font-family: "HarmonyOS Sans";
+  src: url("https://jega.asia/template/fonts/Harmony/HarmonyOS_Sans.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HarmonyOS Sans";
+  src: url("https://jega.asia/template/fonts/Harmony/HarmonyOS_Sans_Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HarmonyOS Sans";
+  src: url("https://jega.asia/template/fonts/Harmony/HarmonyOS_Sans_Bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-white text-jega-text antialiased;
+  }
+}
+
+@utility jega-shadow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.03);
+}
+
+@utility jega-card {
+  @apply bg-jega-card rounded-[24px] border border-jega-border jega-shadow transition-all duration-300;
+}
+
+@utility jega-card-hover {
+  @apply hover:border-gray-300 hover:-translate-y-1 hover:shadow-lg;
+}
