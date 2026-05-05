@@ -96,6 +96,24 @@ const ActivityItem = ({ title, product, time, iconColor }: { title: string, prod
   </div>
 );
 
+const cachedExternalViews = [
+  {
+    tab: "Contact",
+    url: "https://clik.id/myclik",
+    title: "ContactAI"
+  },
+  {
+    tab: "Ask AI",
+    url: "https://hotro.jega.vn/docs/intro",
+    title: "JEGA Help Docs"
+  },
+  {
+    tab: "Visual",
+    url: "https://sso.clik.vn/userauth/client-login",
+    title: "Visual AI Agents"
+  }
+];
+
 export default function App() {
   const [userName] = useState("Thảo");
   const [activeTab, setActiveTab] = useState("Home");
@@ -134,12 +152,11 @@ export default function App() {
   };
 
   const isFullView = activeTab !== "Home" || !!selectedShowroom;
-  const externalViewUrls: Record<string, string> = {
-    Contact: "https://clik.id/myclik",
-    "Ask AI": "https://hotro.jega.vn/docs/intro",
-    Visual: "https://sso.clik.vn/userauth/client-login"
-  };
+  const externalViewUrls = Object.fromEntries(
+    cachedExternalViews.map((view) => [view.tab, view.url])
+  ) as Record<string, string>;
   const currentExternalUrl = selectedShowroom ? null : externalViewUrls[activeTab];
+  const isCachedExternalView = !!currentExternalUrl;
 
   const renderContent = () => {
     if (selectedShowroom) {
@@ -236,69 +253,6 @@ export default function App() {
       );
     }
 
-    if (activeTab === "Contact") {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex-1 min-h-0 flex flex-col"
-        >
-          <div className="flex-1 min-h-0 bg-white border border-jega-border shadow-xl rounded-2xl overflow-hidden relative">
-            <iframe 
-              src="https://clik.id/myclik" 
-              className="absolute inset-0 w-full h-full border-0"
-              title="ContactAI"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </motion.div>
-      );
-    }
-
-    if (activeTab === "Ask AI") {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex-1 min-h-0 flex flex-col"
-        >
-          <div className="flex-1 min-h-0 bg-white border border-jega-border shadow-xl rounded-2xl overflow-hidden relative">
-            <iframe 
-              src="https://hotro.jega.vn/docs/intro" 
-              className="absolute inset-0 w-full h-full border-0"
-              title="JEGA Help Docs"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </motion.div>
-      );
-    }
-
-    if (activeTab === "Visual") {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex-1 min-h-0 flex flex-col"
-        >
-          <div className="flex-1 min-h-0 bg-white border border-jega-border shadow-xl rounded-2xl overflow-hidden relative">
-            <iframe 
-              src="https://sso.clik.vn/userauth/client-login" 
-              className="absolute inset-0 w-full h-full border-0"
-              title="Visual AI Agents"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </motion.div>
-      );
-    }
-
     if (activeTab !== "Home") {
       return (
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
@@ -325,7 +279,7 @@ export default function App() {
       >
         {/* Greeting */}
         <section className="mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">Chào {userName}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Chào {userName} <span aria-hidden="true">&#x1F44B;</span></h2>
           <p className="text-jega-text-muted text-base md:text-lg">Hôm nay bạn muốn làm gì?</p>
         </section>
 
@@ -473,7 +427,40 @@ export default function App() {
           </div>
         </header>
 
-        {renderContent()}
+        <div
+          className={
+            isCachedExternalView
+              ? 'relative flex-1 min-h-0'
+              : 'fixed left-4 right-4 top-20 bottom-24 md:left-[104px] md:right-6 md:bottom-6 pointer-events-none opacity-0'
+          }
+        >
+          {cachedExternalViews.map((view) => {
+            const isActive = activeTab === view.tab;
+
+            return (
+              <motion.div
+                key={view.tab}
+                initial={false}
+                animate={{ opacity: isActive ? 1 : 0 }}
+                transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                aria-hidden={!isActive}
+                className={`absolute inset-0 min-h-0 ${isActive ? 'pointer-events-auto z-10' : 'pointer-events-none z-0'}`}
+              >
+                <div className="h-full min-h-0 bg-white border border-jega-border shadow-xl rounded-2xl overflow-hidden relative">
+                  <iframe
+                    src={view.url}
+                    className="absolute inset-0 w-full h-full border-0"
+                    title={view.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {!isCachedExternalView && renderContent()}
       </main>
 
       {/* Mobile Bottom Navigation */}
